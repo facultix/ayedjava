@@ -1,0 +1,136 @@
+package tp03.ejercicio6;
+
+public class ListaEnlazadaGenerica<T> extends ListaGenerica<T> {
+	private int tamanio;
+	private NodoGenerico<T> inicio;
+	private NodoGenerico<T> actual;
+	@Override
+	public void comenzar() {
+		actual = inicio;
+	}
+
+	@Override
+	public T proximo() {
+		T dato = actual.getDato();
+		actual = actual.getSiguiente();
+		return dato;
+	}
+
+	@Override
+	public boolean fin() {
+		return actual == null;
+	}
+
+	@Override
+	public T elemento(int pos) {
+		if (pos < 1 || pos > this.tamanio())
+			return null;
+		NodoGenerico<T> n = this.inicio;
+		while (pos-- > 1)
+			n = n.getSiguiente();
+		return n.getDato();
+	}
+
+	@Override
+	public boolean agregarEn(T obj, int pos) {
+		if (pos < 1 || pos > this.tamanio() + 1)
+			return false;
+		this.tamanio++;
+		NodoGenerico<T> aux = new NodoGenerico<T>(obj);
+		if (pos == 1) {
+			aux.setSiguiente(inicio);
+			inicio = aux;
+		} else {
+			NodoGenerico<T> n = this.inicio;
+			NodoGenerico<T> ant = null;
+			int posActual = 1;
+			while (!(n == null) && (posActual < pos)) {
+				ant = n;
+				n = n.getSiguiente();
+				posActual++;
+			}
+			aux.setSiguiente(n);
+			ant.setSiguiente(aux);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean agregarInicio(T obj) {
+		return this.agregarEn(obj, 1);
+	}
+
+	@Override
+	public boolean agregarFinal(T obj) {
+		return this.agregarEn(obj, this.tamanio);
+	}
+
+	@Override
+	public boolean eliminar(int pos) {
+		if (pos < 1 || pos > this.tamanio)
+			return false;
+		else{
+			this.tamanio--;
+			if(pos == 1){
+				inicio = inicio.getSiguiente();
+			}else{
+				NodoGenerico<T> act = inicio;
+				NodoGenerico<T> ant = null;
+				while( act != null && pos>1){
+					ant = act;
+					act = act.getSiguiente();
+					pos--;
+				}
+				ant.setSiguiente(act.getSiguiente());
+				act.setSiguiente(null);
+			}
+			
+			return true;
+		}
+	}
+
+	@Override
+	public boolean eliminar(T obj) {
+		if (this.incluye(obj)){
+			this.tamanio--;
+			this.comenzar();
+			if(!actual.getDato().equals(obj)){
+				inicio = actual.getSiguiente();
+				actual.setSiguiente(null);
+			}else{
+			NodoGenerico<T> ant = null;
+			while (!actual.getDato().equals(obj)){
+				ant = actual;
+				this.proximo();
+				}
+			ant.setSiguiente(actual.getSiguiente());
+			actual.setSiguiente(null);
+			}
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	@Override
+	public boolean incluye(T obj) {
+		boolean encontro = false;
+		this.comenzar();
+		while(!this.fin()){
+			if(this.proximo().equals(obj))
+				encontro = true;
+		}
+		return encontro;
+	}
+
+	@Override
+	public boolean esVacia() {		
+		return this.tamanio == 0;
+	}
+
+	@Override
+	public int tamanio() {
+		return this.tamanio;
+	}
+
+}
